@@ -86,5 +86,3 @@ if len(all_items) > 0:
         price: str = item.find_element(By.CLASS_NAME, "wrap-price").find_element(By.TAG_NAME, 'bdi').text
         link: str = item.find_element(By.CLASS_NAME, 'wd-entities-title').find_element(By.TAG_NAME, 'a').get_attribute('href')
         send_messages(f'+4{NO_TEL}', descr, price, link)
-        all_items.clear()
-        
