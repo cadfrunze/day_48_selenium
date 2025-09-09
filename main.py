@@ -79,13 +79,13 @@ else:
         engine.get(new_link)
         sleep(5)
         all_items = [item for item in engine.find_elements(By.CLASS_NAME, "product-wrapper") if DEVICE in item.text.lower() and GIGABYTE.upper() in item.text]
-
-if len(all_items) > 0:
-    for item in all_items:
-        descr: str = item.find_element(By.TAG_NAME, 'h3').text
-        price: str = item.find_element(By.CLASS_NAME, "wrap-price").find_element(By.TAG_NAME, 'bdi').text
-        link: str = item.find_element(By.CLASS_NAME, 'wd-entities-title').find_element(By.TAG_NAME, 'a').get_attribute('href')
-        send_messages(f'+4{NO_TEL}', descr, price, link)
+        if len(all_items) > 0:
+            for item in all_items:
+                descr: str = item.find_element(By.TAG_NAME, 'h3').text
+                price: str = item.find_element(By.CLASS_NAME, "wrap-price").find_element(By.TAG_NAME, 'bdi').text
+                link: str = item.find_element(By.CLASS_NAME, 'wd-entities-title').find_element(By.TAG_NAME, 'a').get_attribute('href')
+                send_messages(f'+4{NO_TEL}', descr, price, link)
+                all_items.clear()
 
 sleep(5)
 engine.quit()
