@@ -1,4 +1,5 @@
 from kill_popup import kill_popup
+from service_messages import send_messages
 from dotenv import load_dotenv
 import os
 from selenium.webdriver import Chrome, ChromeOptions
@@ -17,6 +18,7 @@ TARGET:str = os.getenv("target")
 PATH: str = os.getenv("path_chrome")
 DEVICE: str = 's24+'
 GIGABYTE: str = 'gb'
+NO_TEL: str = os.getenv("nr_telefon")
 
 
 options_chrome: Options = ChromeOptions() 
@@ -49,14 +51,22 @@ while True:
 
 kill_popup(waiting)
 
-all_items: list[WebElement] = [item for item in engine.find_elements(By.CLASS_NAME, "wd-entities-title") if DEVICE in item.text.lower()]
+all_items: list[WebElement] = [item for item in engine.find_elements(By.CLASS_NAME, "product-wrapper") if DEVICE in item.text.lower() and GIGABYTE.upper() in item.text] 
 
+if len(all_items) > 0:
+    for item in all_items:
+        descr: str = item.find_element(By.TAG_NAME, 'h3').text
+        price: str = item.find_element(By.CLASS_NAME, "wrap-price").find_element(By.TAG_NAME, 'bdi').text
+        link: str = item.find_element(By.CLASS_NAME, 'wd-entities-title').find_element(By.TAG_NAME, 'a').get_attribute('href')
+        send_messages(f'+40{NO_TEL}', descr, price, link)
+        all_items.clear()
 try:
     pages_brut: list[WebElement] = engine.find_elements(By.CLASS_NAME, 'page-numbers')
 except ElementNotInteractableException:
     engine.quit()
 else:
     pages_nav: list[WebElement] = list()
+    page2_items: list[WebElement] = list()
     for page in pages_brut:
         try:
             type(int(page.text))
@@ -65,12 +75,12 @@ else:
         else:
             pages_nav.append(page)
     for next_page in range(1, len(pages_nav)):
-        link: str = pages_nav[next_page].get_attribute('href')
-        engine.get(link)
-        all_items.extend([item for item in engine.find_elements(By.CLASS_NAME, "wd-entities-title") if DEVICE in item.text.lower()])
+        new_link: str = pages_nav[next_page].get_attribute('href')
+        engine.get(new_link)
+        sleep(5)
+        all_items = [item for item in engine.find_elements(By.CLASS_NAME, "product-wrapper") if DEVICE in item.text.lower() and GIGABYTE.upper() in item.text]
+
 print(len(all_items))
-
-
     
 
 
